@@ -34,5 +34,22 @@ public class UserController {
 		var result = users.stream().filter(user -> id == user.getId()).findFirst().orElseThrow();
 		return ResponseEntity.ok(result);
 	}
+	
+	/*
+	 * old-school example shows the way without annotation based validation.
+	 */
+	@PostMapping("/old-school")
+	public ResponseEntity<Long> createUser(@RequestBody User user) {
+		String notValidatedName = user.getName();
+		String regexForName = "[A-Z a-z]{1,20}";
+		String validationErrorForName = "User's name %s does not match regualr expression %s"; 
+		if (notValidatedName == null || !notValidatedName.matches(regexForName))
+			throw new IllegalArgumentException(String.format(
+					validationErrorForName, notValidatedName, regexForName));
+		// Validation of other attributes is skipped here...
+		user.setId(UUID.randomUUID().getMostSignificantBits());
+		users.add(user);
+		return ResponseEntity.ok(user.getId());
+	}
 
 }

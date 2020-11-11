@@ -29,9 +29,30 @@ class UserControllerTest {
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	private static final String USER_PATH = "/user";
+	private static final String CODE_VALIDATION_PATH = USER_PATH + "/old-school";
 	
 	@Test
-	void positiveTest() throws Exception {
+	void codeValidationTest() throws Exception {
+		var user = createUser();
+		RequestBuilder postRequest = MockMvcRequestBuilders
+				.post(CODE_VALIDATION_PATH)
+				.content(mapper.writeValueAsString(user))
+				.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletResponse postResponse =  mockMvc.perform(postRequest).andReturn().getResponse();
+		assertEquals(200, postResponse.getStatus());
+		
+		user.setName("UnerlaubtesZeichen!");
+		postRequest = MockMvcRequestBuilders
+				.post(CODE_VALIDATION_PATH)
+				.content(mapper.writeValueAsString(user))
+				.contentType(MediaType.APPLICATION_JSON);
+		postResponse =  mockMvc.perform(postRequest).andReturn().getResponse();
+		assertEquals(400, postResponse.getStatus());
+		assertTrue(postResponse.getContentAsString().contains("does not match regualr expression"));
+	}
+	
+	@Test
+	void annotationValidationPositiveTest() throws Exception {
 		var user = createUser();
 		
 		var postResponse = sendPost(user);
