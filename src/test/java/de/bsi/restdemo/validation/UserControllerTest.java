@@ -92,7 +92,7 @@ class UserControllerTest {
 	@Test
 	void validateNotEmpty() throws Exception {
 		var user = createUser();
-		user.setCity("");
+		user.setCity("   ");
 		assertValidationFailedFor(sendPost(user), "city");
 		assertValidationFailedFor(sendPost(user), "Special message in case of being not valid");
 	}
