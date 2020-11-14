@@ -8,3 +8,5 @@
 ## More information
 Visit Elmar Brauch's German blog to read the article behind this project:
 https://agile-coding.blogspot.com/2020/10/rest-json-apis-in-java-leicht-gemacht.html
+
+Postman testsuite Item_Contoller_Requests.postman_collection.json can be used to test RestController's API with Postman tool.
