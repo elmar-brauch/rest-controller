@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,23 +112,23 @@ class UserControllerTest {
 	}
 	
 	@Test
-	void unknownExceptioHandlerTest() throws Exception {
-		RequestBuilder getRequest = MockMvcRequestBuilders
-				.get(USER_PATH + "/1");
-		MockHttpServletResponse getResponse = mockMvc.perform(getRequest).andReturn().getResponse();
-		assertEquals(500, getResponse.getStatus());
-		assertTrue(getResponse.getContentAsString().contains("Unknown & unexpected exception"));
-	}
-	
-	@Test
 	void validationWithoutController() {
-		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
 		var user = createUser();
 		assertTrue(validator.validate(user).isEmpty());
 		
 		user.setName(null);
 		Set<ConstraintViolation<User>> violations = validator.validate(user);
 		assertFalse(violations.isEmpty());
+	}
+	
+	@Test
+	void userNotFound() throws Exception {
+		RequestBuilder getRequest = MockMvcRequestBuilders
+				.get(USER_PATH + "/12345");
+		MockHttpServletResponse getResponse = mockMvc.perform(getRequest).andReturn().getResponse();
+		assertEquals(404, getResponse.getStatus());
 	}
 	
 	private void assertValidationFailedFor(MockHttpServletResponse response, String invalidAttributeName)
